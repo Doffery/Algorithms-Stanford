@@ -1,0 +1,1 @@
+Answer: 3,2,2,2,1   the 6th value is also a 1, 7th is 0
