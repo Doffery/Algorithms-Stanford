@@ -3,16 +3,16 @@
 #include<queue>
 #include<cstring>
 
-#define VEXNUM 200
 using std::vector;
 using std::priority_queue;
 
+#define VEXNUM 200
 struct Edge {
 	int t, h; //tail, head
 	int value;
 	Edge() {}
-	Edge(int x, int y) {
-		h = x; value = y;
+	Edge(int x, int y, int z) {
+		t = x; h = y; value = z;
 	}
 
 };
@@ -21,15 +21,15 @@ struct Node {
 	int p, i;//pre, index
 	int dis;
 	Node() {}
-	Node(int x, int y) {
-		p = x; value = y;
+	Node(int x, int y, int z) {
+		p = x; i = y; dis = z;
 	}
 	bool operator < (const Node rhs) const {
 		return dis > rhs.dis;
 	}
-}
+};
 
-vector<Edge> edges[VEXNUM + 10];
+vector<Edge>edges[VEXNUM + 10];
 priority_queue<Node> heap;
 
 int dist[VEXNUM + 10];
@@ -43,37 +43,42 @@ void Dijkstra() {
 	}
 	visited[1] = true;
 	dist[1] = 0;
-	for(i = 1; i < VEXNUM; ++i) {
-		while(visited[heap.top().i])
+	i = VEXNUM;
+	while(--i && !heap.empty()) {
+		while(visited[heap.top().i] && !heap.empty())
 			heap.pop();
+		if(heap.empty())
+			break;
 		Node o = heap.top();
 		heap.pop();
 		dist[o.i] = o.dis;
 		visited[o.i] = true;
 		for(j = 0; j < edges[o.i].size(); ++j) {
-			heap.push(Node(o.i, edges[o.i][j], o.dis + edges[o.i][j].value));
+			heap.push(Node(o.i, edges[o.i][j].h, o.dis + edges[o.i][j].value));
 		}
 	}
 }
 
 int main() {
-	freopen("int.txt", "r", stdin);
+	freopen("dijkstraData.txt", "r", stdin);
 
-	int v = 0;
+	int v = 0, i;
 	char tstr[20], vstr[10];
-	fscanf(vstr, "%d", ++v);
-	while(v <= 200) {
-		scanf("%s", tstr);
+	for(i = 0; i < 10; ++i)
+		vstr[i] = '\0';
+	sprintf(vstr, "%d", ++v);
+	while(v <= VEXNUM && scanf("%s", tstr) != EOF) {
 		if(strcmp(tstr, vstr)) {
-			int e, v;
-			sscanf(tstr, "%d,%d", &e, &v);
-			edges[v].push_back(Edge(v, e, v));
+			int e, va;
+			sscanf(tstr, "%d,%d", &e, &va);
+			edges[v-1].push_back(Edge(v-1, e, va));
 		}
 		else {
-			fscanf(vstr, "%d", ++v);
+			sprintf(vstr, "%d", ++v);
 			continue;
 		}
 	}
 
 	Dijkstra();
+	printf("\n");
 }
